@@ -180,30 +180,36 @@ def resnet152_features(pretrained=False, **kwargs):
     return model
 
 
-class FeaturePyramid(nn.Module):
+class SmartFeaturePyramid(nn.Module):
     '''
     Super smart feature pyramid
     '''
 
     def __init__(self, resnet):
-        super(FeaturePyramid, self).__init__()
+        super(SmartFeaturePyramid, self).__init__()
 
         self.resnet = resnet
         _temporary_input = Variable(torch.Tensor(1, 3, 224, 224))
         self.feature_sizes = [output.size(1) for output in self.resnet(_temporary_input)]
 
-        # skip the first output (c2)
-        self.pyramid_transformations = nn.ModuleList([])
+        self.pyramid_transformation_6 = nn.Conv2d(self.feature_sizes[-1], 256, kernel_size=3)
+        self.pyramid_transformation_7 = nn.Conv2d(256, 256, kernel_size=3)
 
-        self.pyramid_transformations.extend(
-            nn.ModuleList([nn.Conv2d(feature_size, 256, kernel_size=1)
-                           for feature_size in self.feature_sizes[1:]]))
+        self.pyramid_transformations = nn.ModuleList([nn.Conv2d(feature_size, 256, kernel_size=1)
+                                                      # ignore the first output (c2)
+                                                      for feature_size in self.feature_sizes[1:]])
 
     def forward(self, x):
-        pass
+        convolutional_features = [*self.resnet(x)]
 
+        pyramid_feature_6 = self.pyramid_transformation_6(convolutional_features[-1])
+        pyramid_feature_7 = self.pyramid_transformation_7(F.relu(pyramid_feature_6))
 
-feature_pyramid = FeaturePyramid(resnet50_features())
+        pyramid_features = []
+
+        for current_transformation, pyramid_transformation in enumerate(self.pyramid_transformations):
+            pyramid_features.append(
+                pyramid_transformation(convolutional_features[1 + current_transformation]))
 
 
 class SubNet(nn.Module):
