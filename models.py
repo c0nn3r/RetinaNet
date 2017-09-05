@@ -27,11 +27,24 @@ model_urls = {
     'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth',
 }
 
-
-def conv1x1(in_channels, out_channels, **kwargs):
-    layer = nn.Conv2d(in_channels, out_channels, kernel_size=1, **kwargs)
+def init_conv_weights(layer):
     nn.init.normal(layer.weight.data, std=0.01)
     nn.init.constant(layer.bias.data, val=0)
+    return layer
+
+
+def conv1x1(in_channels, out_channels, **kwargs):
+
+    layer = nn.Conv2d(in_channels, out_channels, kernel_size=1, **kwargs)
+    layer = init_conv_weights(layer)
+
+    return layer
+
+
+def conv3x3(in_channels, out_channels, **kwargs):
+
+    layer = nn.Conv2d(in_channels, out_channels, kernel_size=3, **kwargs)
+    layer = init_conv_weights(layer)
 
     return layer
 
@@ -180,36 +193,45 @@ def resnet152_features(pretrained=False, **kwargs):
     return model
 
 
-class SmartFeaturePyramid(nn.Module):
-    '''
-    Super smart feature pyramid
-    '''
-
+class FeaturePyramid:
     def __init__(self, resnet):
-        super(SmartFeaturePyramid, self).__init__()
+        super(FeaturePyramid, self).__init__()
 
         self.resnet = resnet
-        _temporary_input = Variable(torch.Tensor(1, 3, 224, 224))
-        self.feature_sizes = [output.size(1) for output in self.resnet(_temporary_input)]
 
-        self.pyramid_transformation_6 = nn.Conv2d(self.feature_sizes[-1], 256, kernel_size=3)
-        self.pyramid_transformation_7 = nn.Conv2d(256, 256, kernel_size=3)
+        # based on resnet feature sizes
+        self.pyramid_transformation_3 = conv1x1(512, 256)
+        self.pyramid_transformation_4 = conv1x1(1024, 256)
+        self.pyramid_transformation_5 = conv1x1(2048, 256)
 
-        self.pyramid_transformations = nn.ModuleList([nn.Conv2d(feature_size, 256, kernel_size=1)
-                                                      # ignore the first output (c2)
-                                                      for feature_size in self.feature_sizes[1:]])
+        self.pyramid_transformation_6 = conv3x3(2048, 256, padding=1, stride=2)
+        self.pyramid_transformation_7 = conv3x3(256, 256, padding=1, stride=2)
 
     def forward(self, x):
-        convolutional_features = [*self.resnet(x)]
+        # don't need c2 as it is too large
+        _, resnet_feature_3, resnet_feature_4, resnet_feature_5 = self.resnet(x)
 
-        pyramid_feature_6 = self.pyramid_transformation_6(convolutional_features[-1])
+        pyramid_feature_6 = self.pyramid_transformation_6(resnet_feature_5)
         pyramid_feature_7 = self.pyramid_transformation_7(F.relu(pyramid_feature_6))
 
-        pyramid_features = []
+        pyramid_feature_5 = self.pyramid_transformation_5(resnet_feature_5)
+        pyramid_feature_4 = torch.add(F.upsample(pyramid_feature_5, scale_factor=2),
+                                      self.pyramid_transformation_4(resnet_feature_4))
+        pyramid_feature_3 = torch.add(F.upsample(pyramid_feature_4, scale_factor=2),
+                                      self.pyramid_transformation_3(resnet_feature_3))
 
-        for current_transformation, pyramid_transformation in enumerate(self.pyramid_transformations):
-            pyramid_features.append(
-                pyramid_transformation(convolutional_features[1 + current_transformation]))
+        return (pyramid_feature_3.size(),
+                pyramid_feature_4.size(),
+                pyramid_feature_5.size(),
+                pyramid_feature_6.size(),
+                pyramid_feature_7.size())
+
+
+resnet = resnet50_features()
+
+feature_pyramid = FeaturePyramid(resnet)
+a = Variable(torch.rand((1, 3, 224, 224)))
+print(feature_pyramid.forward(a))
 
 
 class SubNet(nn.Module):
@@ -221,7 +243,7 @@ class SubNet(nn.Module):
         self.depth = depth
         self.activation = activation
 
-        self.subnet_base = nn.ModuleList([nn.Conv2d(256, 256, kernel_size=3)
+        self.subnet_base = nn.ModuleList([conv3x3(256, 256, padding=1)
                                           for _ in range(depth)])
 
         if mode == 'boxes':
