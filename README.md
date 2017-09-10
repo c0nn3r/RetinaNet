@@ -6,8 +6,18 @@ An implementation of [RetinaNet](https://arxiv.org/abs/1708.02002).
 ## Installation
 
 1. Install [PyTorch](http://pytorch.org/) and [torchvision](https://github.com/pytorch/vision). 
+2. For faster data augmentation, install [pillow-simd](https://github.com/uploadcare/pillow-simd):
 
-2. If you want to train on [COCO 2017](http://cocodataset.org/), install [pycocotools](https://github.com/pdollar/coco/):
+```
+pip uninstall -y pillow
+pip install pillow-simd
+```
+
+## Training
+
+### [COCO 2017](http://cocodataset.org/)
+
+1. First, install [pycocotools](https://github.com/pdollar/coco/):
 
 ```bash
 git clone https://github.com/pdollar/coco/
@@ -18,7 +28,7 @@ cd ../..
 rm -r coco
 ```
 
-3. Download [COCO 2017](http://cocodataset.org/dataset.htm#overview) into `./datasets/COCO/`.
+2. Then download [COCO 2017](http://cocodataset.org/dataset.htm#overview) into `./datasets/COCO/`:
 
 ```bash
 cd datasets
@@ -40,17 +50,11 @@ unzip *.zip
 rm *.zip
 ```
 
-4. For faster data augmentation, install [pillow-simd](https://github.com/uploadcare/pillow-simd):
+Then just run:
 
 ```
-pip uninstall -y pillow
-pip install pillow-simd
+python train_coco.py --gpu
 ```
-
-## Training
-
-### COCO
-Just run `train_coco.py`
 
 
 ### Custom Dataset
