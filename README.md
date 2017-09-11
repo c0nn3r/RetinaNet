@@ -1,7 +1,8 @@
 # RetinaNet
-An implementation of [RetinaNet](https://arxiv.org/abs/1708.02002).
+An implementation of [RetinaNet](https://arxiv.org/abs/1708.02002) in [PyTorch](http://pytorch.org/).
 
 ![RetinaNet Structure](/images/retinanet.png)
+
 
 ## Installation
 
@@ -64,5 +65,19 @@ python train_coco.py
 Lots to write here. :wink:
 
 ## Evaluation
+To evaluate an image on a trained model:
+```
+python eval.py [checkpoint_path] [image_path]
+```
+This will create an image (`output.jpg`) with bounding box annotations.
+
+## Todo
+
+1. Finish converting the COCO dataset class to work with batches.
+2. Train [COCO 2017](http://cocodataset.org/) for 90,000 iterations and save a reusable checkpoint.
+3. Try training on [Pascal VOC](http://host.robots.ox.ac.uk/pascal/VOC/) and add download instructions.
+4. Produce bounding box outputs for a few sanity check images.
+5. Upload trained weights to Github releases.
+5. Train on the 🔮magic proprietary dataset ✨. 
 
 ## Credits
