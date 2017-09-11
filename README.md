@@ -34,14 +34,18 @@ rm -r coco
 cd datasets
 mkdir COCO
 cd COCO
+```
 
-# If using wget:
+If your using `wget`:
+```bash
 wget http://images.cocodataset.org/zips/train2017.zip &&
 wget http://images.cocodataset.org/zips/val2017.zip &&
 wget http://images.cocodataset.org/annotations/annotations_trainval2017.zip
+```
 
-# Using aria2c (recommended for higher bandwidth connections and for easier resuming of the download,
-# tune the number of connections as needed):
+If your using `aria2c` (recommended on for higher bandwidth connections and for allowing resumption of the download.
+Tune the number of max concurrent downloads (`-j`) and max-connection per server (`-x`) as needed:
+```
 aria2c -x 10 -j 10 http://images.cocodataset.org/zips/train2017.zip &&
 aria2c -x 10 -j 10 http://images.cocodataset.org/zips/val2017.zip &&
 aria2c -x 10 -j 10 http://images.cocodataset.org/annotations/annotations_trainval2017.zip
@@ -53,9 +57,8 @@ rm *.zip
 Then just run:
 
 ```
-python train_coco.py --gpu
+python train_coco.py
 ```
-
 
 ### Custom Dataset
 Lots to write here. :wink:
