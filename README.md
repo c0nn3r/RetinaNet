@@ -44,7 +44,7 @@ wget http://images.cocodataset.org/annotations/annotations_trainval2017.zip
 ```
 
 If your using `aria2c` (recommended on for higher bandwidth connections and for allowing resumption of the download.
-Tune the number of max concurrent downloads (`-j`) and max-connection per server (`-x`) as needed:
+Tune the number of max concurrent downloads (`-j`) and max connections per server (`-x`) as needed:
 ```
 aria2c -x 10 -j 10 http://images.cocodataset.org/zips/train2017.zip &&
 aria2c -x 10 -j 10 http://images.cocodataset.org/zips/val2017.zip &&
