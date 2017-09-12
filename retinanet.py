@@ -30,8 +30,9 @@ class FeaturePyramid(nn.Module):
         self.upsample_transform_2 = conv3x3(256, 256, padding=1)
 
     def _upsample(self, original_feature, scaled_feature, scale_factor=2):
+        # is this correct? You do lose information on the upscale...
         width, height = scaled_feature.size()[2:]
-        return F.upsample(original_feature, scale_factor=scale_factor)
+        return F.upsample(original_feature, scale_factor=scale_factor)[:, :, :height, :width]
 
     def forward(self, x):
 
@@ -99,19 +100,20 @@ class SubNet(nn.Module):
             x = self.base_activation(layer(x))
 
         x = self.subnet_output(x)
-        x = x.permute(0, 2, 3, 1).contiguous().view(x.size(0), x.size(2) * x.size(3) * self.anchors, -1)
+        x = x.permute(0, 2, 3, 1).contiguous().view(x.size(0),
+                                                    x.size(2) * x.size(3) * self.anchors, -1)
 
         return x
 
 
 class RetinaNet(nn.Module):
 
-    def __init__(self, classes=80):
+    def __init__(self, classes):
         super(RetinaNet, self).__init__()
         self.classes = classes
 
-        self.resnet = resnet50_features(pretrained=True)
-        self.feature_pyramid = FeaturePyramid(self.resnet)
+        _resnet = resnet50_features(pretrained=True)
+        self.feature_pyramid = FeaturePyramid(_resnet)
 
         self.subnet_boxes = SubNet(mode='boxes')
         self.subnet_classes = SubNet(mode='classes')
@@ -123,7 +125,7 @@ class RetinaNet(nn.Module):
 
         features = self.feature_pyramid(x)
 
-        # might be faster to do one loop
+        # how faster to do one loop
         boxes = [self.subnet_boxes(feature) for feature in features]
         classes = [self.subnet_classes(feature) for feature in features]
 
@@ -131,8 +133,15 @@ class RetinaNet(nn.Module):
 
 
 if __name__ == '__main__':
-    net = RetinaNet()
-    x = Variable(torch.rand(1, 3, 864, 1536))
+    import time
+    net = RetinaNet(classes=80)
+    x = Variable(torch.rand(1, 3, 500, 500), volatile=True)
 
-    for l in net(x):
-        print(l.size())
+    now = time.time()
+    predictions = net(x)
+    later = time.time()
+
+    print(later - now)
+
+    for prediction in predictions:
+        print(prediction.size())
