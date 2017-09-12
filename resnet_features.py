@@ -4,6 +4,9 @@ from torchvision.models.resnet import BasicBlock, Bottleneck, ResNet
 
 
 class BasicBlockFeatures(BasicBlock):
+    '''
+    BasicBlock that returns its last conv layer features.
+    '''
 
     def forward(self, x):
 
@@ -31,7 +34,7 @@ class BasicBlockFeatures(BasicBlock):
 
 class BottleneckFeatures(Bottleneck):
     '''
-    A Bottleneck that returns its last conv layer features.
+    Bottleneck that returns its last conv layer features.
     '''
 
     def forward(self, x):
@@ -92,10 +95,10 @@ model_urls = {
 
 
 def resnet18_features(pretrained=False, **kwargs):
-    """Constructs a ResNet-18 model.
+    '''Constructs a ResNet-18 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
+    '''
     model = ResNetFeatures(BasicBlockFeatures, [2, 2, 2, 2], **kwargs)
 
     if pretrained:
@@ -105,10 +108,10 @@ def resnet18_features(pretrained=False, **kwargs):
 
 
 def resnet34_features(pretrained=False, **kwargs):
-    """Constructs a ResNet-34 model.
+    '''Constructs a ResNet-34 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
+    '''
     model = ResNetFeatures(BasicBlockFeatures, [3, 4, 6, 3], **kwargs)
 
     if pretrained:
@@ -118,10 +121,10 @@ def resnet34_features(pretrained=False, **kwargs):
 
 
 def resnet50_features(pretrained=False, **kwargs):
-    """Constructs a ResNet-50 model.
+    '''Constructs a ResNet-50 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
+    '''
     model = ResNetFeatures(BottleneckFeatures, [3, 4, 6, 3], **kwargs)
 
     if pretrained:
@@ -131,10 +134,10 @@ def resnet50_features(pretrained=False, **kwargs):
 
 
 def resnet101_features(pretrained=False, **kwargs):
-    """Constructs a ResNet-101 model.
+    '''Constructs a ResNet-101 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
+    '''
     model = ResNetFeatures(BottleneckFeatures, [3, 4, 23, 3], **kwargs)
 
     if pretrained:
@@ -144,10 +147,10 @@ def resnet101_features(pretrained=False, **kwargs):
 
 
 def resnet152_features(pretrained=False, **kwargs):
-    """Constructs a ResNet-152 model.
+    '''Constructs a ResNet-152 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
+    '''
     model = ResNetFeatures(BottleneckFeatures, [3, 8, 36, 3], **kwargs)
 
     if pretrained:
