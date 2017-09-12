@@ -3,14 +3,14 @@ An implementation of [RetinaNet](https://arxiv.org/abs/1708.02002) in [PyTorch](
 
 ![RetinaNet Structure](/images/retinanet.png)
 
-* [Installation](installation)
-* [Training](training)
-    * [COCO 2017](coco-2017)
-    * [Pascal VOC](pascal-voc)
-    * [Custom Dataset](custom-dataset)
-* [Evaluation](evaluation)
-* [Todo](todo)
-* [Credits](credits)
+* [Installation](#installation)
+* [Training](#training)
+    * [COCO 2017](#coco-2017)
+    * [Pascal VOC](#pascal-voc)
+    * [Custom Dataset](#custom-dataset)
+* [Evaluation](#evaluation)
+* [Todo](#todo)
+* [Credits](#credits)
 
 ## Installation
 
