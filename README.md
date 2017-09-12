@@ -46,7 +46,7 @@ wget http://images.cocodataset.org/annotations/annotations_trainval2017.zip
 
 If your using `aria2c` (recommended on for higher bandwidth connections and for allowing resumption of the download.
 Tune the number of max concurrent downloads (`-j`) and max connections per server (`-x`) as needed:
-```
+```bash
 aria2c -x 10 -j 10 http://images.cocodataset.org/zips/train2017.zip &&
 aria2c -x 10 -j 10 http://images.cocodataset.org/zips/val2017.zip &&
 aria2c -x 10 -j 10 http://images.cocodataset.org/annotations/annotations_trainval2017.zip
@@ -59,6 +59,38 @@ Then just run:
 
 ```
 python train_coco.py
+```
+
+### Pascal VOC
+
+```bash
+cd datasets
+mkdir VOC
+cd VOC
+```
+
+```bash
+wget http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtrainval_06-Nov-2007.tar &&
+wget http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar &&
+wget http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtest_06-Nov-2007.tar
+```
+
+If your using `aria2c` (recommended on for higher bandwidth connections and for allowing resumption of the download.
+Tune the number of max concurrent downloads (`-j`) and max connections per server (`-x`) as needed:
+
+```bash
+aria2c -x 10 -j wget http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtrainval_06-Nov-2007.tar &&
+aria2c -x 10 -j wget http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar &&
+aria2c -x 10 -j wget http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtest_06-Nov-2007.tar
+
+tar xf *.tar
+rm *.tar
+```
+
+Then just run:
+
+```bash
+python train_voc.py
 ```
 
 ### Custom Dataset
