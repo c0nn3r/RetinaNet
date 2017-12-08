@@ -2,13 +2,13 @@ import torch.nn as nn
 
 
 def init_conv_weights(layer, weights_std=0.01,  bias=0):
-    ''''
+    '''
     RetinaNet's layer initialization
 
     :layer
     :
 
-    ''''
+    '''
     nn.init.normal(layer.weight.data, std=weights_std)
     nn.init.constant(layer.bias.data, val=bias)
     return layer
