@@ -65,15 +65,17 @@ def train(model, cuda=False):
             class_targets.cuda()
 
         images = Variable(images)
-        box_predictions = Variable(box_targets)
-        class_predictions = Variable(class_targets)
-
+        # box_predictions = Variable(box_targets)
+        # class_predictions = Variable(class_targets)
+        box_predictions, classes_predictions = model(images)
+        
         loss = criterion(box_predictions, box_targets, class_predictions, class_targets)
-        loss.backwards()
+        # loss.backwards()
+        loss.backward()
 
         average_loss += loss[0]
 
-        boxes, classes = model(images)
+        # boxes, classes = model(images)
 
         optimizer.step()
 
