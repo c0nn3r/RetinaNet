@@ -31,7 +31,7 @@ class FeaturePyramid(nn.Module):
 
     def _upsample(self, original_feature, scaled_feature, scale_factor=2):
         # is this correct? You do lose information on the upscale...
-        width, height = scaled_feature.size()[2:]
+        height, width = scaled_feature.size()[2:]
         return F.upsample(original_feature, scale_factor=scale_factor)[:, :, :height, :width]
 
     def forward(self, x):
