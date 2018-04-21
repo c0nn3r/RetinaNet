@@ -18,8 +18,10 @@ class FocalLoss(nn.Module):
 
         cross_entropy = F.cross_entropy(output, target)
         cross_entropy_log = torch.log(cross_entropy)
+        logpt = - F.cross_entropy(output, target)
+        pt    = torch.exp(logpt)
 
-        focal_loss = -((1 - cross_entropy) ** self.focusing_param) * cross_entropy_log
+        focal_loss = -((1 - pt) ** self.focusing_param) * logpt
 
         balanced_focal_loss = self.balance_param * focal_loss
 
